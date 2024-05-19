@@ -23,6 +23,7 @@ jobs:
     - name: Run linting
       run: |
         set -e
+        pip install poetry
         poetry run black --check --diff --color .
         poetry run isort --check-only .
         # poetry run pylint .

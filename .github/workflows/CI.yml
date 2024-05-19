@@ -21,6 +21,7 @@ jobs:
     - name: Run linting
       run: |
         set -e
+        pip install poetry
         poetry run black --check --diff --color .
         poetry run isort --check-only .
         # poetry run pylint .
@@ -28,7 +29,6 @@ jobs:
     - name: Run e2e tests
       run: |
         set -e
-        pip install poetry
         poetry env use 3.10
         poetry install
         poetry run pytest tests
