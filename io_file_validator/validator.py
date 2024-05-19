@@ -89,7 +89,6 @@ class ValidatorDataframe(Validator):
             standard_yaml_file_name = ptemp.name
             self.write_dict_to_yaml(yaml_content, standard_yaml_file_name)
             validated_df = self.validate(dataframe=dataframe, file_name=standard_yaml_file_name)
-            st.success("Validated dataframe!")
         return validated_df
 
     def read_file(self, my_upload):
