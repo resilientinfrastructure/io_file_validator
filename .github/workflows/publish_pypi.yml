@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+env:
+  POETRY_HTTP_BASIC_PYPI_USERNAME: __token__
+  POETRY_HTTP_BASIC_PYPI_PASSWORD: ${{ secrets.POETRY_HTTP_BASIC_PYPI_PASSWORD }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Run linting
+      run: |
+        set -e
+        poetry run black --check --diff --color .
+        poetry run isort --check-only .
+        poetry run pylint .
+
+    - name: Release
+      run: |
+        poetry build
+        poetry run twine check dist/*
+        poetry config pypi-token.pypi $POETRY_HTTP_BASIC_PYPI_PASSWORD
+        poetry publish --no-interaction
