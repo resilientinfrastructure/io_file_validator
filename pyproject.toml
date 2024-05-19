@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "io_file_validator"
-version = "0.1.2"
+version = "0.1.3"
 description = "File Validator Tool helps you validate your data with a plethora of formats"
 authors = ["Manrique Vargas <machomaxg@gmail.com>"]
 readme = "README.md"
