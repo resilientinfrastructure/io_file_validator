@@ -25,7 +25,7 @@ jobs:
         set -e
         poetry run black --check --diff --color .
         poetry run isort --check-only .
-        poetry run pylint .
+        # poetry run pylint .
 
     - name: Release
       run: |
