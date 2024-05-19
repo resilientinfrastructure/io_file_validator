@@ -4,7 +4,7 @@ from pathlib import Path
 import pandera
 import pytest
 
-from file_validator.validator import ValidatorDataframe
+from io_file_validator.validator import ValidatorDataframe
 
 
 def test_validator():

@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from pydiggs import validator
 
-from file_validator.validator import Validator
+from io_file_validator.validator import Validator
 
 
 class PydiggsValidator(Validator):
