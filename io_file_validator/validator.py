@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from tempfile import NamedTemporaryFile
 
 import pandas as pd
@@ -7,14 +7,18 @@ import requests
 import yaml
 
 
+class UnsupportedFormat(Exception):
+    "File Format Not Specified or Supported"
+
+
 class Validator:
     def __init__(self, file_format) -> None:
         self.file_format = file_format
 
     @staticmethod
     def check_size(my_upload):
-        MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
-        if my_upload.size > MAX_FILE_SIZE:
+        max_file_size = 5 * 1024 * 1024  # 5MB
+        if my_upload.size > max_file_size:
             print("The uploaded file is too large. Please upload a file smaller than 5MB.")
 
     @abstractmethod
@@ -36,7 +40,7 @@ class ValidatorDataframe(Validator):
     def fetch_yaml_from_github(url):
         try:
             # Send a GET request to fetch the raw content of the YAML file from GitHub
-            response = requests.get(url)
+            response = requests.get(url, verify=False, timeout=60)
             response.raise_for_status()  # Raise an exception for non-200 status codes
             yaml_content = response.text
             return yaml_content
@@ -63,17 +67,15 @@ class ValidatorDataframe(Validator):
                 print("YAML file fetched and read successfully:")
                 print(yaml_data)
                 return yaml_data
-            else:
-                print("Failed to read YAML locally.")
-                return None
-        else:
-            print("Failed to fetch YAML from GitHub.")
+            print("Failed to read YAML locally.")
             return None
+        print("Failed to fetch YAML from GitHub.")
+        return None
 
     @staticmethod
     def write_dict_to_yaml(data, filename):
         try:
-            with open(filename, "w") as yaml_file:
+            with open(filename, "w", encoding="utf-8") as yaml_file:
                 yaml.dump(data, yaml_file, default_flow_style=False)
             print(f"Dictionary successfully written to '{filename}' as YAML.")
         except IOError as e:
@@ -96,7 +98,8 @@ class ValidatorDataframe(Validator):
             dataframe = pd.read_json(my_upload)
         elif self.file_format == "csv":
             dataframe = pd.read_csv(my_upload)
-
+        else:
+            raise UnsupportedFormat
         return dataframe
 
     def validate(self, dataframe, file_name):
@@ -105,8 +108,9 @@ class ValidatorDataframe(Validator):
         return validated_df
 
     def run_validation(self, uploaded_file) -> pd.DataFrame:
-        if self._validation_method == "yaml_url":
-            self.check_size(my_upload=uploaded_file)
-            yaml_content = self.get_yaml_content(self.url)
-            validated_df = self.load_and_validate_file(my_upload=uploaded_file, yaml_content=yaml_content)
+        # TODO: add other validation methods
+        # if self._validation_method == "yaml_url":
+        self.check_size(my_upload=uploaded_file)
+        yaml_content = self.get_yaml_content(self.url)
+        validated_df = self.load_and_validate_file(my_upload=uploaded_file, yaml_content=yaml_content)
         return validated_df
